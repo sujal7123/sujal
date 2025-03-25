@@ -1,0 +1,29 @@
+# Define dataset
+x <- c(151, 174, 138, 186, 128, 136, 179, 163, 152, 131)
+y <- c(63, 81, 56, 91, 47, 57, 76, 72, 62, 48)
+
+# Create linear regression model
+relation <- lm(y ~ x)
+
+# Print regression model
+print(relation)
+
+# Print summary of regression
+print(summary(relation))
+
+# Prediction for x = 170
+a <- data.frame(x = 170)
+result <- predict(relation, a)
+print(result)
+
+# Save regression plot as PNG
+png(file = "linear_regression.png")
+plot(x, y, col = "blue", main = "Height & Weight Regression",
+     cex = 1.3, pch = 16, xlab = "Height in cm", ylab = "Weight in kg")
+abline(relation, col = "red")  # Add regression line
+dev.off()
+
+# Show plot in RStudio
+plot(x, y, col = "blue", main = "Height & Weight Regression",
+     cex = 1.3, pch = 16, xlab = "Height in cm", ylab = "Weight in kg")
+abline(relation, col = "red")  # Add regression line
