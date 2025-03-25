@@ -1,0 +1,61 @@
+# Load dataset
+quality <- read.csv("C:\\Users\\Admin\\Downloads\\quality.csv")
+
+# Check structure
+str(quality)
+table(quality$PoorCare)
+
+# Proportion of PoorCare
+98 / 131  
+
+# Install and load caTools package
+install.packages("caTools")  
+library(caTools)  
+
+# Set seed for reproducibility
+set.seed(88)  
+
+# Split dataset into training and testing sets
+split <- sample.split(quality$PoorCare, SplitRatio = 0.75)  
+qualityTrain <- subset(quality, split == TRUE)  
+qualityTest <- subset(quality, split == FALSE)  
+
+# Check number of rows in training set
+nrow(qualityTrain)  
+
+# Logistic Regression Model
+QualityLog <- glm(PoorCare ~ officevisits + Narcotics, 
+                  data = qualityTrain, 
+                  family = binomial)  
+
+# Model Summary
+summary(QualityLog)  
+
+# Predictions on training set
+predictTrain <- predict(QualityLog, type = "response")  
+summary(predictTrain)  
+
+# Calculate mean predictions by PoorCare group
+tapply(predictTrain, qualityTrain$PoorCare, mean)  
+
+# Confusion Matrices at different thresholds
+table(qualityTrain$PoorCare, predictTrain > 0.5)  
+table(qualityTrain$PoorCare, predictTrain > 0.7)  
+table(qualityTrain$PoorCare, predictTrain > 0.2)  
+
+# Install and load ROCR package for ROC Curve
+install.packages("ROCR")  
+library(ROCR)  
+
+# Create ROC Prediction and Performance Objects
+ROCRpred <- prediction(predictTrain, qualityTrain$PoorCare)  
+ROCRperf <- performance(ROCRpred, "tpr", "fpr")  
+
+# Plot ROC Curve
+plot(ROCRperf)  
+
+# ROC Curve with Color Size
+plot(ROCRperf, colorize = TRUE)  
+
+# ROC Curve with Cutoff Labels
+plot(ROCRperf, colorize = TRUE, print.cutoffs.at = seq(0, 1, by = 0.1), text.adj = c(-0.2, 1.7))  
